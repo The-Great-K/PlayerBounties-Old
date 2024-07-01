@@ -10,6 +10,8 @@ website: https://fadingdaze.com/
 commands:
   gettracker:
     description: "Gives tracking compass that points to player with bounty."
+    usage: "/gettracker"
+    permission-message: "You do not have permission to use this command!"
   startbounty:
     description: "Starts bounty for given player."
     usage: "/startbounty [player]"

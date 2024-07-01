@@ -16,22 +16,26 @@ public class StartBounty implements CommandExecutor, TabExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command,
                              @NotNull String name, @NotNull String[] args) {
-        if (!args[0].isEmpty()) {
-            if (PlayerBounties.bountyHead != null) {
-                Bukkit.getOnlinePlayers().forEach(player -> {
-                    if (player.getName().equalsIgnoreCase(args[0])) {
-                        PlayerBounties.bountyHead = player;
-                    }
-                });
-            } else if (args[0].equalsIgnoreCase("clear")) {
-                PlayerBounties.bountyHead = null;
-                sender.sendMessage(PlayerBounties.bountyHead.getName() + "'s bounty cleared!");
-            }
-            return true;
-        } else {
+        if (args.length == 0) {
             sender.sendMessage("ERROR: Please include a player name!");
             return false;
         }
+        if (args[0].equalsIgnoreCase("clear")) {
+            PlayerBounties.bountyHead = null;
+            sender.sendMessage(PlayerBounties.bountyHead.getName() + "'s bounty cleared!");
+            return true;
+        }
+
+        Bukkit.getOnlinePlayers().forEach(player -> {
+            if (player.getName().equalsIgnoreCase(args[0])) {
+                PlayerBounties.bountyHead = player;
+            }
+        });
+        if (PlayerBounties.bountyHead == null) {
+            sender.sendMessage("ERROR: Invalid player name!");
+            return false;
+        }
+        return true;
     }
 
     @Override
