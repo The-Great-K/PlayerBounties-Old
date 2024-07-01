@@ -11,8 +11,15 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 public class StartBounty implements CommandExecutor, TabExecutor {
+    private final PlayerBounties plugin;
+
+    public StartBounty(PlayerBounties plugin) {
+        this.plugin = plugin;
+    }
+
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command,
                              @NotNull String name, @NotNull String[] args) {
@@ -21,17 +28,20 @@ public class StartBounty implements CommandExecutor, TabExecutor {
             return false;
         }
         if (args[0].equalsIgnoreCase("clear")) {
-            PlayerBounties.bountyHead = null;
-            sender.sendMessage(PlayerBounties.bountyHead.getName() + "'s bounty cleared!");
+            plugin.bountyHead = null;
+            sender.sendMessage(plugin.bountyHead.getName() + "'s bounty cleared!");
             return true;
         }
 
         Bukkit.getOnlinePlayers().forEach(player -> {
             if (player.getName().equalsIgnoreCase(args[0])) {
-                PlayerBounties.bountyHead = player;
+                plugin.bountyHead = player;
+                Bukkit.broadcastMessage("Bounty started for " + player.getName() + "!" +
+                        "You have 3 hours to hunt them down. Use /gettracker to get a tracking compass.");
+                plugin.getLogger().log(Level.INFO, "Bounty started for " + player.getName());
             }
         });
-        if (PlayerBounties.bountyHead == null) {
+        if (plugin.bountyHead == null) {
             sender.sendMessage("ERROR: Invalid player name!");
             return false;
         }
