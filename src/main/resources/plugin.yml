@@ -14,6 +14,6 @@ commands:
     permission-message: "You do not have permission to use this command!"
   startbounty:
     description: "Starts bounty for given player."
-    usage: "/startbounty [player]"
+    usage: "/startbounty [player | clear]"
     permission: playerbounties.commands.startbounty
     permission-message: "You do not have permission to use this command!"

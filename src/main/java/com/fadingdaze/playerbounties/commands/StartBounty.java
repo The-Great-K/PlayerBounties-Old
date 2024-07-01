@@ -28,15 +28,26 @@ public class StartBounty implements CommandExecutor, TabExecutor {
             return false;
         }
         if (args[0].equalsIgnoreCase("clear")) {
-            plugin.bountyHead = null;
-            sender.sendMessage(plugin.bountyHead.getName() + "'s bounty cleared!");
-            return true;
+            if (plugin.bountyHead != null) {
+                plugin.bountyHead = null;
+                sender.sendMessage(plugin.bountyHead.getName() + "'s bounty cleared!");
+                return true;
+            } else {
+                sender.sendMessage("ERROR: Cannot clear non-existent bounty!");
+                return false;
+            }
+        }
+
+        if (plugin.bountyHead != null) {
+            sender.sendMessage("ERROR: Player bounty already exists!");
+            sender.sendMessage("Use /startbounty clear, to clear bounty.");
+            return false;
         }
 
         Bukkit.getOnlinePlayers().forEach(player -> {
             if (player.getName().equalsIgnoreCase(args[0])) {
                 plugin.bountyHead = player;
-                Bukkit.broadcastMessage("Bounty started for " + player.getName() + "!" +
+                Bukkit.broadcastMessage("Bounty started for " + player.getName() + "! " +
                         "You have 3 hours to hunt them down. Use /gettracker to get a tracking compass.");
                 plugin.getLogger().log(Level.INFO, "Bounty started for " + player.getName());
             }
@@ -44,8 +55,9 @@ public class StartBounty implements CommandExecutor, TabExecutor {
         if (plugin.bountyHead == null) {
             sender.sendMessage("ERROR: Invalid player name!");
             return false;
+        } else {
+            return true;
         }
-        return true;
     }
 
     @Override
