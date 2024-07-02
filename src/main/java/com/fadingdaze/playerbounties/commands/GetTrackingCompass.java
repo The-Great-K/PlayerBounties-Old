@@ -16,6 +16,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.logging.Level;
 
 public class GetTrackingCompass implements CommandExecutor {
@@ -37,6 +38,7 @@ public class GetTrackingCompass implements CommandExecutor {
         ItemMeta meta = trackingCompass.getItemMeta();
 
         meta.setDisplayName(ChatColor.BLUE + "Tracking: " + ChatColor.RED + plugin.bountyHead.getName());
+        meta.setLore(List.of("> Right click with this item to update!"));
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         meta.addEnchant(Enchantment.DURABILITY, 3, true);
 
