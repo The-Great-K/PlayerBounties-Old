@@ -3,7 +3,7 @@ version: '${project.version}'
 main: com.fadingdaze.playerbounties.PlayerBounties
 api-version: '1.20'
 load: STARTUP
-authors: [The_Great_K]
+authors: [ The_Great_K ]
 description: Bare bones player bounties plugin made for fading daze, made with Paper
 website: https://fadingdaze.com/
 
@@ -11,9 +11,17 @@ commands:
   gettracker:
     description: "Gives tracking compass that points to player with bounty."
     usage: "/gettracker"
+    permission: playerbounties.command.gettracker
     permission-message: "You do not have permission to use this command!"
   startbounty:
     description: "Starts bounty for given player."
-    usage: "/startbounty [player | clear]"
-    permission: playerbounties.commands.startbounty
+    usage: "/bounty [set | clear] [player] [seconds]"
+    permission: playerbounties.command.bounty
     permission-message: "You do not have permission to use this command!"
+permissions:
+  playerbounties.command.gettracker:
+    description: "Allows you to get a compass that tracks the current bounty"
+    default: true
+  playerbounties.command.bounty:
+    description: "Allows you to start or clear a bounty"
+    default: op

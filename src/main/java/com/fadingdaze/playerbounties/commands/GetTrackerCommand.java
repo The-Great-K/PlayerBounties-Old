@@ -2,7 +2,8 @@ package com.fadingdaze.playerbounties.commands;
 
 import com.fadingdaze.playerbounties.PlayerBounties;
 import com.fadingdaze.playerbounties.keys.Keys;
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -11,7 +12,6 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.CompassMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
@@ -19,10 +19,10 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.logging.Level;
 
-public class GetTrackingCompass implements CommandExecutor {
+public class GetTrackerCommand implements CommandExecutor {
     private final PlayerBounties plugin;
 
-    public GetTrackingCompass(PlayerBounties plugin) {
+    public GetTrackerCommand(PlayerBounties plugin) {
         this.plugin = plugin;
     }
 
@@ -37,8 +37,9 @@ public class GetTrackingCompass implements CommandExecutor {
         ItemStack trackingCompass = new ItemStack(Material.COMPASS);
         ItemMeta meta = trackingCompass.getItemMeta();
 
-        meta.setDisplayName(ChatColor.BLUE + "Tracking: " + ChatColor.RED + plugin.bountyHead.getName());
-        meta.setLore(List.of("> Right click with this item to update!"));
+        meta.displayName(Component.text("Tracking: ", NamedTextColor.RED)
+                .append(Component.text(plugin.getBounty().getName(), NamedTextColor.BLUE)));
+        meta.lore(List.of(Component.text("> Right click with this item to update!")));
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         meta.addEnchant(Enchantment.DURABILITY, 3, true);
 

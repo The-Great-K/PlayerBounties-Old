@@ -1,26 +1,60 @@
 package com.fadingdaze.playerbounties;
 
-import com.fadingdaze.playerbounties.commands.GetTrackingCompass;
-import com.fadingdaze.playerbounties.commands.StartBounty;
+import com.fadingdaze.playerbounties.commands.BountyCommand;
+import com.fadingdaze.playerbounties.commands.GetTrackerCommand;
 import com.fadingdaze.playerbounties.keys.Keys;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.CompassMeta;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.logging.Level;
 
 public final class PlayerBounties extends JavaPlugin implements Listener {
-    public Player bountyHead;
+    private Player bountyHead = null;
+    private int bountyTime = 0;
+    private int bountyDuration = 10800; // default value, 10800 seconds / 3 hours
+    private final Runnable tickFunction = () -> {
+        if (bountyTime >= bountyDuration) {
+            bountyTime = 0;
+            bountyDuration = 10800;
+            bountyHead = null;
+        }
+
+        if (bountyHead != null) {
+            bountyTime++;
+        }
+
+        Bukkit.getOnlinePlayers().forEach(player -> {
+            for (ItemStack item : player.getInventory().getContents()) {
+                if (item.getType() == Material.COMPASS && item.getItemMeta().getPersistentDataContainer().has(Keys.TRACKING_COMPASS)) {
+                    CompassMeta cMeta = (CompassMeta) item.getItemMeta();
+
+                    if (bountyHead != null) {
+                        cMeta.setLodestone(bountyHead.getLocation());
+                        cMeta.displayName(Component.text("Tracking: ", NamedTextColor.BLUE).append(Component.text(bountyHead.getName(), NamedTextColor.RED)));
+
+                        item.setItemMeta(cMeta);
+                    } else {
+                        item.subtract();
+                        player.sendMessage("Bounty has ended! Removed tracking compass.");
+                        player.sendMessage("You may use /gettracker again when another bounty starts.");
+                    }
+                }
+            }
+        });
+    };
+
+    public static PlayerBounties getInstance() {
+        return getPlugin(PlayerBounties.class);
+    }
 
     @Override
     public void onEnable() {
@@ -39,10 +73,10 @@ public final class PlayerBounties extends JavaPlugin implements Listener {
 
         getLogger().info("Player Bounties plugin successfully loaded!");
 
-        getCommand("startbounty").setExecutor(new StartBounty(this));
-        getCommand("gettracker").setExecutor(new GetTrackingCompass(this));
+        getCommand("startbounty").setExecutor(new BountyCommand(this));
+        getCommand("gettracker").setExecutor(new GetTrackerCommand(this));
 
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, tickFunction, 0, 5);
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, tickFunction, 0, 20);
     }
 
     @Override
@@ -57,53 +91,19 @@ public final class PlayerBounties extends JavaPlugin implements Listener {
         }
     }
 
-    @EventHandler
-    public void onClick(PlayerInteractEvent e) {
-        Player player = e.getPlayer();
-        ItemStack mainHand = player.getInventory().getItemInMainHand();
-        ItemStack offHand = player.getInventory().getItemInOffHand();
-        if (veryLongVerboseIfStatement(e, player)) {
-            CompassMeta cMeta = (CompassMeta) mainHand.getItemMeta();
-
-            if (bountyHead != null) {
-                cMeta.setLodestone(bountyHead.getLocation());
-                cMeta.setDisplayName(ChatColor.BLUE + "Tracking: " + ChatColor.RED + bountyHead.getName());
-            } else {
-                player.sendMessage("ERROR: No existing bounty!");
-            }
-
-            mainHand.setItemMeta(cMeta);
-        } else if (otherVeryLongVerboseIfStatement(e, player)) {
-            CompassMeta cMeta = (CompassMeta) mainHand.getItemMeta();
-
-            if (bountyHead != null) {
-                cMeta.setLodestone(bountyHead.getLocation());
-                cMeta.setDisplayName(ChatColor.BLUE + "Tracking: " + ChatColor.RED + bountyHead.getName());
-            } else {
-                player.sendMessage("ERROR: No existing bounty!");
-            }
-
-            mainHand.setItemMeta(cMeta);
-        }
+    public Player getBounty() {
+        return this.bountyHead;
     }
 
-    private Runnable tickFunction = () -> {
-
-    };
-
-    public static PlayerBounties getInstance() {
-        return getPlugin(PlayerBounties.class);
+    public void setBounty(Player player) {
+        this.bountyHead = player;
     }
 
-    private boolean veryLongVerboseIfStatement(PlayerInteractEvent e, Player player) {
-        return player.getInventory().getItemInMainHand().getType().equals(Material.COMPASS)
-                && player.getInventory().getItemInMainHand().getItemMeta().getPersistentDataContainer().has(Keys.TRACKING_COMPASS)
-                && (e.getAction().equals(Action.RIGHT_CLICK_AIR) || e.getAction().equals(Action.RIGHT_CLICK_BLOCK));
-    }
+//    public int getBountyDuration() {
+//        return this.bountyDuration;
+//    }
 
-    private boolean otherVeryLongVerboseIfStatement(PlayerInteractEvent e, Player player) {
-        return player.getInventory().getItemInOffHand().getType().equals(Material.COMPASS)
-                && player.getInventory().getItemInOffHand().getItemMeta().getPersistentDataContainer().has(Keys.TRACKING_COMPASS)
-                && (e.getAction().equals(Action.RIGHT_CLICK_AIR) || e.getAction().equals(Action.RIGHT_CLICK_BLOCK));
+    public void setBountyDuration(int bountyDuration) {
+        this.bountyDuration = bountyDuration;
     }
 }
