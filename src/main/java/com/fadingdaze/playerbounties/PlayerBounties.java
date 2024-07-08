@@ -37,7 +37,7 @@ public final class PlayerBounties extends JavaPlugin implements Listener {
 
         Bukkit.getOnlinePlayers().forEach(player -> {
             for (ItemStack item : player.getInventory().getContents()) {
-                if (item.getType() == Material.COMPASS && item.getItemMeta().getPersistentDataContainer().has(Keys.TRACKING_COMPASS)) {
+                if (item != null && item.getType() == Material.COMPASS && item.getItemMeta().getPersistentDataContainer().has(Keys.TRACKING_COMPASS)) {
                     CompassMeta cMeta = (CompassMeta) item.getItemMeta();
 
                     if (bountyHead != null) {
