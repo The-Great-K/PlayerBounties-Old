@@ -34,6 +34,11 @@ public class GetTrackerCommand implements CommandExecutor {
             return false;
         }
 
+        if (plugin.hasTracker.contains(player)) {
+            player.sendMessage("ERROR: You have already claimed a compass for this bounty!");
+            return false;
+        }
+
         ItemStack trackingCompass = new ItemStack(Material.COMPASS);
         ItemMeta meta = trackingCompass.getItemMeta();
 
@@ -49,8 +54,9 @@ public class GetTrackerCommand implements CommandExecutor {
 
         player.getInventory().addItem(trackingCompass);
 
+        plugin.hasTracker.add(player);
         plugin.getLogger().log(Level.INFO, "Gave " + sender.getName() + " 1 Tracking Compass");
 
-        return false;
+        return true;
     }
 }

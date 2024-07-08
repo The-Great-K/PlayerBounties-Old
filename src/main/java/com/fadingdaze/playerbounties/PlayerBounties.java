@@ -15,9 +15,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.CompassMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.HashSet;
 import java.util.logging.Level;
 
 public final class PlayerBounties extends JavaPlugin implements Listener {
+    public HashSet<Player> hasTracker = new HashSet<>();
     private Player bountyHead = null;
     private int bountyTime = 0;
     private int bountyDuration = 10800; // default value, 10800 seconds / 3 hours
@@ -26,6 +28,7 @@ public final class PlayerBounties extends JavaPlugin implements Listener {
             bountyTime = 0;
             bountyDuration = 10800;
             bountyHead = null;
+            hasTracker.clear();
         }
 
         if (bountyHead != null) {
@@ -82,6 +85,10 @@ public final class PlayerBounties extends JavaPlugin implements Listener {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
+        bountyTime = 0;
+        bountyDuration = 10800;
+        bountyHead = null;
+        hasTracker.clear();
     }
 
     @EventHandler
