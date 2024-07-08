@@ -76,7 +76,7 @@ public final class PlayerBounties extends JavaPlugin implements Listener {
 
         getLogger().info("Player Bounties plugin successfully loaded!");
 
-        getCommand("startbounty").setExecutor(new BountyCommand(this));
+        getCommand("bounty").setExecutor(new BountyCommand(this));
         getCommand("gettracker").setExecutor(new GetTrackerCommand(this));
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, tickFunction, 0, 20);
