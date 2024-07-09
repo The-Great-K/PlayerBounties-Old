@@ -2,8 +2,6 @@ package com.fadingdaze.playerbounties.commands;
 
 import com.fadingdaze.playerbounties.PlayerBounties;
 import com.fadingdaze.playerbounties.keys.Keys;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -16,7 +14,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
 import java.util.logging.Level;
 
 public class GetTrackerCommand implements CommandExecutor {
@@ -36,15 +33,13 @@ public class GetTrackerCommand implements CommandExecutor {
 
         if (plugin.hasTracker.contains(player)) {
             player.sendMessage("ERROR: You have already claimed a compass for this bounty!");
+            plugin.getLogger().log(Level.INFO, "Player tried to claim a second tracker compass!");
             return false;
         }
 
         ItemStack trackingCompass = new ItemStack(Material.COMPASS);
         ItemMeta meta = trackingCompass.getItemMeta();
 
-        meta.displayName(Component.text("Tracking: ", NamedTextColor.RED)
-                .append(Component.text(plugin.getBounty().getName(), NamedTextColor.BLUE)));
-        meta.lore(List.of(Component.text("> Right click with this item to update!")));
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         meta.addEnchant(Enchantment.DURABILITY, 3, true);
 

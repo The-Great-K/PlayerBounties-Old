@@ -50,9 +50,7 @@ public class BountyCommand implements CommandExecutor, TabExecutor {
                 Bukkit.getOnlinePlayers().forEach(player -> {
                     if (player.getName().equalsIgnoreCase(args[1])) { // if player exists, start bounty for player
                         plugin.setBounty(player);
-                        Bukkit.broadcast(Component.text("Bounty started for " + player.getName() + "! " +
-                                        "You have 3 hours to hunt them down. Use /gettracker to get a tracking compass.", NamedTextColor.DARK_RED)
-                                .append(Component.text("\nRemember: you can only claim one compass per bounty!", NamedTextColor.RED)));
+
                         plugin.getLogger().log(Level.INFO, "Bounty started for " + player.getName());
                     }
                 });
@@ -70,7 +68,6 @@ public class BountyCommand implements CommandExecutor, TabExecutor {
                         }
                     } else {
                         plugin.setBountyDuration(10800);
-                        return true;
                     }
                 }
             } else {
@@ -78,7 +75,11 @@ public class BountyCommand implements CommandExecutor, TabExecutor {
                 return false;
             }
         }
-        return false;
+        Bukkit.broadcast(Component.text("Bounty started for " + plugin.getBounty().getName() + "! " +
+                        "You have 3 hours to hunt them down. Use /gettracker to get a tracking compass.", NamedTextColor.DARK_RED)
+                .append(Component.text("\nRemember: you can only claim one compass per bounty!", NamedTextColor.RED)));
+
+        return true;
     }
 
     @Override
