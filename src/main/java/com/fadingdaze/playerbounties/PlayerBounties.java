@@ -2,6 +2,7 @@ package com.fadingdaze.playerbounties;
 
 import com.fadingdaze.playerbounties.commands.BountyCommand;
 import com.fadingdaze.playerbounties.commands.GetTrackerCommand;
+import com.fadingdaze.playerbounties.commands.GiveBountyActivatorCommand;
 import com.fadingdaze.playerbounties.keys.Keys;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -10,7 +11,9 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.CompassMeta;
@@ -23,18 +26,20 @@ import java.util.logging.Level;
 public final class PlayerBounties extends JavaPlugin implements Listener {
     public HashSet<Player> hasTracker = new HashSet<>();
     private Player bountyHead = null;
-    private int bountyTime = 0;
+    private int bountyTime = 10800;
     private int bountyDuration = 10800; // default value, 10800 seconds / 3 hours
     private final Runnable tickFunction = () -> {
-        if (bountyTime >= bountyDuration) {
-            endBounty();
+        /* ---------------------- BOUNTY MANAGEMENT ---------------------- */
+        if (getBountyDuration() <= 0) {
             Bukkit.broadcast(Component.text("Bounty has ended! Nobody got the bounty!", NamedTextColor.DARK_RED));
+            endBounty();
         }
 
         if (getBounty() != null) {
-            bountyDuration++;
+            bountyDuration--;
         }
 
+        /* ---------------------- TRACKING COMPASS ---------------------- */
         Bukkit.getOnlinePlayers().forEach(player -> {
             for (ItemStack item : player.getInventory().getContents()) {
                 if (item != null && item.getType() == Material.COMPASS && item.getItemMeta().getPersistentDataContainer().has(Keys.TRACKING_COMPASS)) {
@@ -93,6 +98,7 @@ public final class PlayerBounties extends JavaPlugin implements Listener {
 
         getCommand("bounty").setExecutor(new BountyCommand(this));
         getCommand("gettracker").setExecutor(new GetTrackerCommand(this));
+        getCommand("givebountyactivator").setExecutor(new GiveBountyActivatorCommand(this));
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, tickFunction, 0, 20);
     }
@@ -114,13 +120,24 @@ public final class PlayerBounties extends JavaPlugin implements Listener {
     public void onPlayerDeath(PlayerDeathEvent event) {
         if (event.getPlayer() == getBounty()) {
             if (event.getPlayer().getKiller() != null) {
-                endBounty();
                 Bukkit.broadcast(Component.text("Bounty, " + getBounty().getName()
                         + " has been killed by " + event.getPlayer().getKiller() + "!", NamedTextColor.DARK_RED));
-            } else {
                 endBounty();
+            } else {
                 Bukkit.broadcast(Component.text("Bounty, " + getBounty().getName() + " has died!", NamedTextColor.DARK_RED));
+                endBounty();
             }
+        }
+    }
+
+    @EventHandler
+    public void onClickEvent(PlayerInteractEvent event) {
+        if (veryLongVerboseIfStatement(event, event.getPlayer())) {
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "bounty set " + event.getPlayer().getName());
+            event.getPlayer().getInventory().getItemInMainHand().subtract();
+        } else if (anotherVeryLongVerboseIfStatement(event, event.getPlayer())) {
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "bounty set " + event.getPlayer().getName());
+            event.getPlayer().getInventory().getItemInOffHand().subtract();
         }
     }
 
@@ -137,6 +154,7 @@ public final class PlayerBounties extends JavaPlugin implements Listener {
     }
 
     public void setBountyDuration(int bountyDuration) {
+        this.bountyTime = bountyDuration;
         this.bountyDuration = bountyDuration;
     }
 
@@ -147,6 +165,18 @@ public final class PlayerBounties extends JavaPlugin implements Listener {
         minutes %= 60;
 
         return hours + "h " + minutes + "m " + seconds + "s";
+    }
+
+    private boolean veryLongVerboseIfStatement(PlayerInteractEvent e, Player player) {
+        return player.getInventory().getItemInMainHand().getType().equals(Material.NETHER_STAR)
+                && player.getInventory().getItemInMainHand().getItemMeta().getPersistentDataContainer().has(Keys.BOUNTY_ACTIVATOR)
+                && (e.getAction().equals(Action.RIGHT_CLICK_AIR) || e.getAction().equals(Action.RIGHT_CLICK_BLOCK));
+    }
+
+    private boolean anotherVeryLongVerboseIfStatement(PlayerInteractEvent e, Player player) {
+        return player.getInventory().getItemInOffHand().getType().equals(Material.NETHER_STAR)
+                && player.getInventory().getItemInOffHand().getItemMeta().getPersistentDataContainer().has(Keys.BOUNTY_ACTIVATOR)
+                && (e.getAction().equals(Action.RIGHT_CLICK_AIR) || e.getAction().equals(Action.RIGHT_CLICK_BLOCK));
     }
 }
 

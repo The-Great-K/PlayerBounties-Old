@@ -13,6 +13,11 @@ commands:
     usage: "/gettracker"
     permission: playerbounties.command.gettracker
     permission-message: "You do not have permission to use this command!"
+  givebountyactivator:
+    description: "Starts bounty for given player."
+    usage: "/givebountyactivator [player]"
+    permission: playerbounties.command.bounty
+    permission-message: "You do not have permission to use this command!"
   bounty:
     description: "Starts bounty for given player."
     usage: "/bounty [set | clear] [player] [seconds]"

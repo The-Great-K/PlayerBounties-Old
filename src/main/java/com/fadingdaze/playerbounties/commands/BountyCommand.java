@@ -4,6 +4,7 @@ import com.fadingdaze.playerbounties.PlayerBounties;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -30,10 +31,11 @@ public class BountyCommand implements CommandExecutor, TabExecutor {
             sender.sendMessage("ERROR: Please include parameters!");
             return false;
         }
-        if (args[0].equalsIgnoreCase("clear")) { // clear bounty when [/bounty clear] is used
+        if (args.length >= 1 && args[0].equalsIgnoreCase("clear")) { // clear bounty when [/bounty clear] is used
             if (plugin.getBounty() != null) { // if bounty exists, clear bounty
-                plugin.setBounty(null);
                 sender.sendMessage(plugin.getBounty().getName() + "'s bounty cleared!");
+                Bukkit.broadcast(Component.text(plugin.getBounty().getName() + "'s bounty cleared!", NamedTextColor.DARK_RED));
+                plugin.endBounty();
                 return true;
             } else { // otherwise send error
                 sender.sendMessage("ERROR: Cannot clear non-existent bounty!");
@@ -46,7 +48,7 @@ public class BountyCommand implements CommandExecutor, TabExecutor {
                 return false;
             }
 
-            if (!args[1].isBlank()) {
+            if (args.length >= 2 && !args[1].isBlank()) {
                 Bukkit.getOnlinePlayers().forEach(player -> {
                     if (player.getName().equalsIgnoreCase(args[1])) { // if player exists, start bounty for player
                         plugin.setBounty(player);
@@ -59,7 +61,7 @@ public class BountyCommand implements CommandExecutor, TabExecutor {
                     plugin.getLogger().log(Level.WARNING, "Attempted to start bounty on non-existent/offline player!");
                     return false;
                 } else {
-                    if (!args[2].isBlank()) {
+                    if (args.length >= 3 && !args[2].isBlank()) {
                         try {
                             plugin.setBountyDuration(Integer.parseInt(args[2]));
                         } catch (NumberFormatException e) {
@@ -75,8 +77,10 @@ public class BountyCommand implements CommandExecutor, TabExecutor {
                 return false;
             }
         }
+        Bukkit.getOnlinePlayers().forEach(player -> player.sendTitle("BOUNTY!" + ChatColor.RED, null, 10, 70, 20));
         Bukkit.broadcast(Component.text("Bounty started for " + plugin.getBounty().getName() + "! " +
-                        "You have 3 hours to hunt them down. Use /gettracker to get a tracking compass.", NamedTextColor.DARK_RED)
+                        "You have " + plugin.formatSeconds(plugin.getBountyDuration()) +
+                        " to hunt them down. Use /gettracker to get a tracking compass.", NamedTextColor.DARK_RED)
                 .append(Component.text("\nRemember: you can only claim one compass per bounty!", NamedTextColor.RED)));
 
         return true;
