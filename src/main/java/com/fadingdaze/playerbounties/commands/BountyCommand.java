@@ -3,8 +3,8 @@ package com.fadingdaze.playerbounties.commands;
 import com.fadingdaze.playerbounties.PlayerBounties;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -35,7 +35,7 @@ public class BountyCommand implements CommandExecutor, TabExecutor {
             if (plugin.getBounty() != null) { // if bounty exists, clear bounty
                 sender.sendMessage(plugin.getBounty().getName() + "'s bounty cleared!");
                 Bukkit.broadcast(Component.text(plugin.getBounty().getName() + "'s bounty cleared!", NamedTextColor.DARK_RED));
-                plugin.endBounty();
+                plugin.endBounty(null);
                 return true;
             } else { // otherwise send error
                 sender.sendMessage("ERROR: Cannot clear non-existent bounty!");
@@ -77,7 +77,8 @@ public class BountyCommand implements CommandExecutor, TabExecutor {
                 return false;
             }
         }
-        Bukkit.getOnlinePlayers().forEach(player -> player.sendTitle("BOUNTY!" + ChatColor.RED, null, 10, 70, 20));
+        Bukkit.getOnlinePlayers().forEach(player -> player.showTitle(Title.title(Component.text("BOUNTY STARTED!", NamedTextColor.DARK_RED),
+                Component.text(plugin.getBounty().getName(), NamedTextColor.RED))));
         Bukkit.broadcast(Component.text("Bounty started for " + plugin.getBounty().getName() + "! " +
                         "You have " + plugin.formatSeconds(plugin.getBountyDuration()) +
                         " to hunt them down. Use /gettracker to get a tracking compass.", NamedTextColor.DARK_RED)

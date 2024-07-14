@@ -2,6 +2,8 @@ package com.fadingdaze.playerbounties.commands;
 
 import com.fadingdaze.playerbounties.PlayerBounties;
 import com.fadingdaze.playerbounties.keys.Keys;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -15,6 +17,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 
@@ -63,6 +66,9 @@ public class GiveBountyActivatorCommand implements CommandExecutor {
 
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         meta.addEnchant(Enchantment.DURABILITY, 3, true);
+
+        meta.displayName(Component.text("Bounty Activator", NamedTextColor.DARK_PURPLE));
+        meta.lore(List.of(Component.text("Right click this item to start a bounty on yourself.")));
 
         meta.getPersistentDataContainer().set(Keys.BOUNTY_ACTIVATOR, PersistentDataType.BOOLEAN, true);
 

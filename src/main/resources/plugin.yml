@@ -1,5 +1,5 @@
 name: PlayerBounties
-version: '${project.version}'
+version: '0.1.1'
 main: com.fadingdaze.playerbounties.PlayerBounties
 api-version: '1.20'
 load: STARTUP
@@ -9,24 +9,36 @@ website: https://fadingdaze.com/
 
 commands:
   gettracker:
-    description: "Gives tracking compass that points to player with bounty."
+    description: "Gives tracking compass that points to player with bounty"
     usage: "/gettracker"
     permission: playerbounties.command.gettracker
     permission-message: "You do not have permission to use this command!"
   givebountyactivator:
-    description: "Starts bounty for given player."
+    description: "Gives player a bounty activator"
+    aliases: "/giveba"
     usage: "/givebountyactivator [player]"
-    permission: playerbounties.command.bounty
+    permission: playerbounties.command.giveba
     permission-message: "You do not have permission to use this command!"
   bounty:
     description: "Starts bounty for given player."
     usage: "/bounty [set | clear] [player] [seconds]"
     permission: playerbounties.command.bounty
     permission-message: "You do not have permission to use this command!"
+  reloadpbconfig:
+    description: "Reloads bounty config"
+    usage: "/reloadpbconfig"
+    permission: playerbounties.command.reload
+    permission-message: "You do not have permission to use this command!"
 permissions:
   playerbounties.command.gettracker:
     description: "Allows you to get a compass that tracks the current bounty"
     default: true
+  playerbounties.command.giveba:
+    description: "Allows you to give said player a bounty activator"
+    default: op
   playerbounties.command.bounty:
     description: "Allows you to start or clear a bounty"
+    default: op
+  playerbounties.command.reload:
+    description: "Allows you to reload the plugin config"
     default: op
